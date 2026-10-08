@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I miei render</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+:root{--bg:#050506;--ink:#f5f5f7;--muted:#9a9aa3;--red:#ff3b24;--red-d:#d9220f;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 "Inter Tight",system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(16px,3vw,40px)}
+.glass{background:linear-gradient(160deg,#1d1d20 0%,#0b0b0d 72%);border:1px solid var(--line);border-top-color:rgba(255,255,255,.34);border-radius:26px;box-shadow:0 30px 60px -30px #000,inset 0 1px 0 rgba(255,255,255,.06)}
+.red{color:var(--red)}
+
+/* barra in alto */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.25rem;letter-spacing:-.03em}
+.logo i{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#050506 0 28%,var(--red) 30%);box-shadow:0 0 18px rgba(255,59,36,.6)}
+.pills{display:flex;gap:4px;padding:5px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.04)}
+.pills a{padding:7px 18px;border-radius:999px;color:var(--ink);text-decoration:none;font-size:.9rem}
+.pills a.on{background:var(--red)}
+.pills a:not(.on):hover{background:rgba(255,255,255,.08)}
+.btn{border:1px solid var(--line);border-radius:999px;padding:11px 22px;font-weight:500;background:rgba(255,255,255,.06)}
+.btn:hover{background:rgba(255,255,255,.14)}
+.btn.red{background:linear-gradient(180deg,#ff5a3f,var(--red-d));border-color:#ff7a62;box-shadow:0 0 34px rgba(255,59,36,.45)}
+.btn.red:hover{filter:brightness(1.12)}
+.btn.small{padding:8px 16px;font-size:.88rem}
+
+/* hero */
+.hero{position:relative;background:radial-gradient(55% 55% at 72% 35%,rgba(255,45,20,.30),transparent 70%),var(--bg);background-size:cover;background-position:center}
+.hero.img::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(5,5,6,.55),var(--bg) 96%),radial-gradient(55% 55% at 72% 35%,rgba(255,45,20,.25),transparent 70%)}
+.hero>.wrap{position:relative}
+.hero-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;align-items:center;padding:28px 0 64px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);font-size:.82rem;color:var(--muted)}
+.badge b{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red)}
+h1.big{margin:22px 0 18px;font-weight:400;font-size:clamp(2.9rem,6.4vw,5.6rem);line-height:.95;letter-spacing:-.05em}
+h1.big em{font-style:normal;background:linear-gradient(90deg,#fff 15%,var(--red) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);max-width:38ch;margin:0 0 26px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{padding:14px 16px;border-radius:18px}
+.stat small{display:block;color:var(--muted);font-size:.75rem}
+.stat b{display:block;font-weight:400;font-size:clamp(1.6rem,3vw,2.3rem);letter-spacing:-.04em;line-height:1.2}
+
+/* visualizzatore */
+.stage{position:relative;overflow:hidden;border-radius:28px;margin:0}
+.stage model-viewer{display:block;width:100%;height:min(64vh,600px);--poster-color:transparent;
+  background:radial-gradient(ellipse at 50% 100%,rgba(255,59,36,.4),transparent 62%),#0a0a0c}
+.stage img,.stage video{display:block;width:100%;height:min(64vh,600px);object-fit:contain;background:#000}
+.stage video,.stage .spin{touch-action:none;cursor:grab;user-select:none}
+.zoom{overflow:hidden;background:#000;touch-action:none;cursor:zoom-in}
+.zoom img{transform-origin:center;user-select:none;-webkit-user-drag:none}
+.stage-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,.35)}
+.stage-bar h2{margin:0;font-size:1.1rem;font-weight:500;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stage-bar span{font-size:.82rem;color:var(--muted);text-align:right}
+.fx{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding:12px 20px;border-top:1px solid var(--line);font-size:.86rem;color:var(--muted)}
+.fx label{display:flex;align-items:center;gap:8px}
+.fx select,.fx button,.autoBtn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.07);padding:5px 14px}
+.fx select option{background:#111;color:#fff}
+.fx button:hover,.autoBtn:hover{background:rgba(255,255,255,.18)}
+.fx button.on{background:var(--red);border-color:var(--red)}
+.fx input[type=range]{accent-color:var(--red);width:110px}
+.fx input[type=checkbox]{accent-color:var(--red)}
+.empty{padding:70px 24px;text-align:center;color:var(--muted)}
+.empty h2{color:var(--ink);margin:0 0 6px;font-weight:500;font-size:1.5rem;letter-spacing:-.03em}
+
+/* testo grande */
+.about{display:grid;grid-template-columns:1fr 2fr;gap:24px;padding:70px 0 40px;align-items:start}
+.about p{margin:0;font-size:clamp(1.6rem,3.6vw,2.9rem);line-height:1.1;letter-spacing:-.04em;font-weight:400}
+
+/* raccolta */
+.shelf-head{display:flex;justify-content:space-between;align-items:baseline;margin:30px 0 14px}
+.shelf-head h2{margin:0;font-weight:400;font-size:clamp(1.8rem,3.4vw,2.8rem);letter-spacing:-.04em}
+.shelf-head small{color:var(--muted)}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:40px}
+.card{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(160deg,#1a1a1d,#0b0b0d);border:1px solid var(--line);border-top-color:rgba(255,255,255,.28);transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:rgba(255,255,255,.4)}
+.card.on{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 0 36px rgba(255,59,36,.3)}
+.card .pick{display:block;width:100%;padding:0;border:0;background:none;text-align:left}
+.card model-viewer{display:block;width:100%;height:170px;pointer-events:none;--poster-color:transparent}
+.card img,.card video{display:block;width:100%;height:170px;object-fit:cover;pointer-events:none;background:#000}
+.card .name{padding:11px 16px 14px;font-weight:500;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{position:absolute;left:10px;top:10px;background:var(--red);color:#fff;border-radius:999px;padding:2px 10px;font-size:.74rem;font-weight:600}
+.del{position:absolute;top:10px;right:10px;border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.65);padding:4px 11px;font-size:.78rem}
+.del:hover{background:#fff;color:#000}
+.del.sure{background:var(--red);border-color:var(--red);color:#fff}
+.new{border:1px dashed rgba(255,255,255,.3);background:transparent;border-radius:22px;min-height:228px;display:grid;place-content:center;gap:6px;text-align:center;color:var(--muted);padding:16px}
+.new b{font-size:2rem;line-height:1;color:var(--red);font-weight:300}
+.new:hover{border-color:var(--red);color:var(--ink)}
+
+/* cosa puoi caricare */
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:20px 0 70px}
+.feat article{padding:24px;border-radius:24px}
+.feat h3{margin:0 0 6px;font-weight:400;font-size:1.5rem;letter-spacing:-.035em}
+.feat p{margin:0 0 16px;color:var(--muted);font-size:.9rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-size:.8rem}
+.foot{padding:0 0 40px;color:var(--muted);font-size:.85rem;text-align:center}
+
+.drop{position:fixed;inset:0;background:rgba(255,59,36,.92);color:#fff;display:none;place-content:center;font-size:2rem;font-weight:500;z-index:9;text-align:center}
+.drop.show{display:grid}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:999px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+.toast.show{opacity:1}
+
+/* copertina */
+.cover{position:relative;height:min(52vh,470px)}
+.cv{position:absolute;width:48%;padding:8px;border:0;border-radius:24px;display:block;text-align:left;transition:transform .2s}
+.cv:nth-child(1){left:2%;top:12%;transform:rotate(-5deg);z-index:2}
+.cv:nth-child(2){right:2%;top:0;transform:rotate(5deg)}
+.cv:nth-child(3){left:26%;bottom:0;transform:rotate(-1.5deg);z-index:3}
+.cv:hover{transform:rotate(0) scale(1.03);z-index:4}
+.cv img,.cv video,.cv model-viewer{display:block;width:100%;height:clamp(150px,22vh,210px);object-fit:cover;border-radius:16px;pointer-events:none;background:#000;--poster-color:transparent}
+.cv .tag{left:18px;top:18px}
+.cv.ph{position:relative;width:100%;height:100%;display:grid;place-content:center;color:var(--muted);text-align:center;border:1px dashed rgba(255,255,255,.3);transform:none}
+/* album più grande */
+.shelf{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card model-viewer,.card img,.card video{height:230px}
+.card img,.card video{transition:transform .35s}
+.card:hover img,.card:hover video{transform:scale(1.04)}
+.card .pick{overflow:hidden}
+/* visualizzatore a schermo intero */
+.lb{position:fixed;inset:0;z-index:8;display:none;align-items:center;justify-content:center;gap:12px;padding:16px;background:rgba(3,3,4,.92);backdrop-filter:blur(8px)}
+.lb.show{display:flex}
+.lb #stageHost{width:min(1100px,86vw)}
+.lb .stage{width:100%}
+.lb-x{position:absolute;top:16px;right:20px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:1.6rem;line-height:1}
+.lb-nav{flex:none;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:1.8rem;line-height:1}
+.lb-x:hover,.lb-nav:hover{background:var(--red);border-color:var(--red)}
+@media (max-width:900px){.lb-nav{position:absolute;bottom:18px}.lb-nav.prev{left:18px}.lb-nav.next{right:18px}.lb #stageHost{width:94vw}}
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}.pills{display:none}.about{grid-template-columns:1fr;padding-top:40px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<section class="hero" id="hero">
+ <div class="wrap">
+  <nav class="nav">
+    <div class="logo"><i></i>Render Lab</div>
+    <div class="pills"><a class="on" href="#hero">Home</a><a href="#raccolta">Album</a><a href="#formati">Formati</a></div>
+    <button class="btn red small" id="addBtn">Aggiungi render</button>
+  </nav>
+  <div class="hero-grid">
+    <div>
+      <span class="badge"><b></b>Album personale</span>
+      <h1 class="big">Il mio<br>album di<br><em>render</em></h1>
+      <p class="lead">Tutti i miei render in un posto solo. Aprine uno per ruotarlo, ingrandirlo o guardarlo a 360°.</p>
+      <div class="cta">
+        <button class="btn red" id="addBtn2">Aggiungi render</button>
+        <button class="btn" id="seqBtn" title="Scegli tutte le immagini di un giro completo">Sequenza 360°</button>
+        <button class="btn" id="bgBtn" title="Cambia l'immagine di sfondo">Sfondo</button>
+      </div>
+      <div class="stats">
+        <div class="stat glass"><small>Render</small><b id="st1">0</b></div>
+        <div class="stat glass"><small>Modelli 3D</small><b id="st2">0</b></div>
+        <div class="stat glass"><small>Video e 360°</small><b id="st3">0</b></div>
+      </div>
+    </div>
+    <div class="cover" id="cover"></div>
+  </div>
+ </div>
+</section>
+<input type="file" id="hdr" accept=".hdr,.jpg,.jpeg,.png" hidden>
+<input type="file" id="bgIn" accept="image/*" hidden>
+<input type="file" id="seqIn" accept="image/*" multiple hidden>
+<input type="file" id="file" accept=".glb,image/*,video/*" multiple hidden>
+
+<div class="wrap">
+  <section class="about" id="about">
+    <div><span class="badge"><b></b>Come è fatto</span></div>
+    <p>Un album per i miei <span class="red">render</span>: modelli 3D da ruotare, immagini da ingrandire, video e giri a <span class="red">360°</span> da trascinare.</p>
+  </section>
+  <section id="raccolta"><div id="app"></div></section>
+  <section id="formati">
+    <div class="shelf-head"><h2>Cosa puoi caricare</h2></div>
+    <div class="feat">
+      <article class="glass"><h3>Modelli 3D</h3><p>File .glb da Blender.</p><div class="chips"><span>Ruota e zooma</span><span>Luce HDRI</span><span>Foto PNG</span></div></article>
+      <article class="glass"><h3>Immagini</h3><p>Render fissi in PNG, JPG o WebP.</p><div class="chips"><span>Zoom fino a 8×</span><span>Sposta con il mouse</span></div></article>
+      <article class="glass"><h3>Video</h3><p>Il giro della statua in MP4 o WebM.</p><div class="chips"><span>Trascina per ruotare</span><span>Giro automatico</span></div></article>
+      <article class="glass"><h3>Sequenze 360°</h3><p>Tutti i fotogrammi di un giro completo.</p><div class="chips"><span>Rotazione fluida</span><span>Ordine automatico</span></div></article>
+    </div>
+  </section>
+  <p class="foot">I render restano salvati solo in questo browser.</p>
+</div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Visualizzatore">
+  <button class="lb-x" id="lbX" aria-label="Chiudi">×</button>
+  <button class="lb-nav prev" id="lbPrev" aria-label="Precedente">‹</button>
+  <div id="stageHost"></div>
+  <button class="lb-nav next" id="lbNext" aria-label="Successivo">›</button>
+</div>
+<div class="drop" id="drop">Rilascia i file per aggiungerli</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ---------- Archivio nel browser (IndexedDB) ---------- */
+const DB='render-gallery', STORE='models';
+const open=()=>new Promise((res,rej)=>{
+  const r=indexedDB.open(DB,1);
+  r.onupgradeneeded=()=>r.result.createObjectStore(STORE,{keyPath:'id'});
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+});
+const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{
+  const t=db.transaction(STORE,mode),s=t.objectStore(STORE),q=fn(s);
+  t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);});};
+const getAll=()=>tx('readonly',s=>s.getAll());
+const put=m=>tx('readwrite',s=>s.put(m));
+const remove=id=>tx('readwrite',s=>s.delete(id));
+
+/* ---------- Stato ---------- */
+let items=[], urls={}, selected=null;
+const $=s=>document.querySelector(s);
+const urlOf=m=>urls[m.id]||(urls[m.id]=URL.createObjectURL(m.blob||m.frames[0]));
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nice=n=>n.replace(/\.[a-z0-9]+$/i,'').replace(/[_-]+/g,' ').trim();
+
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2400);}
+
+/* ---------- Disegno pagina ---------- */
+let seqTimer;let lbOpen=false;
+const media=m=>m.type==='image'
+  ?`<div class="zoom"><img src="${urlOf(m)}" alt="${esc(m.name)}"></div>`
+  :m.type==='seq'
+  ?`<img class="spin" src="${urlOf(m)}" alt="${esc(m.name)}" draggable="false">`
+  :m.type==='video'
+  ?`<video src="${urlOf(m)}" loop autoplay muted playsinline></video>`
+  :`<model-viewer src="${urlOf(m)}" alt="${esc(m.name)}" camera-controls auto-rotate shadow-intensity="1" interaction-prompt="none" loading="eager"></model-viewer>`;
+const thumb=m=>m.type==='seq'
+  ?`<img src="${urlOf(m)}" alt="" loading="lazy"><span class="tag">360°</span>`
+  :m.type==='image'
+  ?`<img src="${urlOf(m)}" alt="" loading="lazy">`
+  :m.type==='video'
+  ?`<video src="${urlOf(m)}#t=0.1" preload="metadata" muted></video><span class="tag">Video</span>`
+  :`<model-viewer src="${urlOf(m)}" alt="" loading="lazy" interaction-prompt="none" disable-zoom></model-viewer>`;
+function updateCover(){
+  const c=$('#cover'),last=items.slice(-3).reverse();
+  c.innerHTML=last.length?last.map(m=>`<button class="cv glass" data-pick="${m.id}" aria-label="Apri ${esc(m.name)}">${thumb(m)}</button>`).join(''):'<div class="cv glass ph">Qui compariranno i tuoi ultimi render</div>';
+}
+function updateStats(){
+  updateCover();
+  $('#st1').textContent=items.length;
+  $('#st2').textContent=items.filter(m=>m.type==='model').length;
+  $('#st3').textContent=items.filter(m=>m.type==='video'||m.type==='seq').length;
+}
+function render(){
+  clearInterval(seqTimer);
+  const app=$('#app');
+  if(!items.length){
+    lbOpen=false;$('#lb').classList.remove('show');$('#stageHost').innerHTML='';
+    app.innerHTML=`<div class="empty glass"><h2>Nessun render per ora</h2>
+      <p>Trascina qui un render (immagine, video o file .glb) oppure sceglilo dal computer.</p>
+      <button class="btn red" id="emptyAdd">Aggiungi render</button></div>`;
+    $('#emptyAdd').onclick=()=>$('#file').click();
+    updateStats();
+    return;
+  }
+  if(!items.find(m=>m.id===selected)) selected=items[0].id;
+  const cur=items.find(m=>m.id===selected);
+  const stageHTML=`
+  <section class="stage glass">
+    ${media(cur)}
+    <div class="stage-bar"><h2>${esc(cur.name)}</h2><span>${cur.type==='model'?'Trascina per ruotare, scorri per zoomare':cur.type==='image'?'Scorri per zoomare, trascina per spostare, doppio clic per tornare':'Trascina a destra o a sinistra per ruotare'}</span>${cur.type==='video'||cur.type==='seq'?'<button class="autoBtn" id="autoBtn" type="button">Rotazione automatica</button>':''}</div>
+    ${cur.type!=='model'?'':`<div class="fx">
+      <label>Luce
+        <select id="fxEnv">${ENVS.map((e,i)=>`<option value="${i}" ${i===fx.env?'selected':''}>${e.n}</option>`).join('')}
+          ${fx.custom?`<option value="c" ${fx.env==='c'?'selected':''}>${esc(fx.customName)}</option>`:''}</select></label>
+      <button id="fxHdr" type="button">Usa il mio HDRI</button>
+      <label>Esposizione <input id="fxExp" type="range" min="0.3" max="2.5" step="0.05" value="${fx.exp}"></label>
+      <label>Ombre morbide <input id="fxSoft" type="range" min="0" max="1" step="0.05" value="${fx.soft}"></label>
+      <label><input id="fxSky" type="checkbox" ${fx.sky?'checked':''}> Mostra l'HDRI come sfondo</label>
+      <button id="fxShot" type="button">Salva foto</button>
+    </div>`}
+  </section>`;
+  $('#stageHost').innerHTML=lbOpen?stageHTML:'';
+  $('#lb').classList.toggle('show',lbOpen);document.body.style.overflow=lbOpen?'hidden':'';
+  app.innerHTML=`
+  <div class="shelf-head"><h2>Il mio album</h2><small>${items.length} ${items.length===1?'render':'render'}</small></div>
+  <section class="shelf">
+    ${items.map(m=>`
+      <article class="card ${lbOpen&&m.id===selected?'on':''}">
+        <button class="pick" data-pick="${m.id}" aria-label="Mostra ${esc(m.name)}">
+          ${thumb(m)}
+          <div class="name">${esc(m.name)}</div>
+        </button>
+        <button class="del" data-del="${m.id}">Elimina</button>
+      </article>`).join('')}
+    <button class="new" id="newCard"><b>+</b><span>Aggiungi un altro render</span></button>
+  </section>`;
+  $('#newCard').onclick=()=>$('#file').click();
+  updateStats();
+  if(lbOpen){if(cur.type==='model')bindFx();setupInteractive(cur);}
+  applyFx();
+}
+
+/* ---------- Muovere i render già finiti ---------- */
+function setupInteractive(m){
+  const stage=$('.stage');if(!stage)return;
+  if(m.type==='image')return setupZoom(stage.querySelector('.zoom'));
+  if(m.type==='video')return setupVideo(stage.querySelector('video'));
+  if(m.type==='seq')return setupSeq(m,stage.querySelector('.spin'));
+}
+function setupZoom(box){
+  const img=box.querySelector('img');let s=1,x=0,y=0,drag=null;
+  const apply=()=>{img.style.transform=`translate(${x}px,${y}px) scale(${s})`;box.style.cursor=s>1?'grab':'zoom-in';};
+  box.addEventListener('wheel',e=>{e.preventDefault();
+    s=Math.min(8,Math.max(1,s*(e.deltaY<0?1.15:1/1.15)));if(s===1){x=y=0;}apply();},{passive:false});
+  box.onpointerdown=e=>{if(s>1){drag={x:e.clientX-x,y:e.clientY-y};box.setPointerCapture(e.pointerId);}};
+  box.onpointermove=e=>{if(drag){x=e.clientX-drag.x;y=e.clientY-drag.y;apply();}};
+  box.onpointerup=box.onpointercancel=()=>{drag=null;};
+  box.ondblclick=()=>{s=1;x=y=0;apply();};
+}
+function setupVideo(v){
+  let drag=false,x0=0,t0=0;
+  v.onpointerdown=e=>{drag=true;x0=e.clientX;t0=v.currentTime;v.pause();v.setPointerCapture(e.pointerId);};
+  v.onpointermove=e=>{if(!drag||!v.duration)return;
+    let t=(t0+(e.clientX-x0)/v.clientWidth*v.duration)%v.duration;if(t<0)t+=v.duration;v.currentTime=t;};
+  v.onpointerup=v.onpointercancel=()=>{drag=false;};
+  $('#autoBtn').onclick=()=>{v.paused?v.play():v.pause();};
+}
+function setupSeq(m,img){
+  m._f=m._f||m.frames.map(b=>URL.createObjectURL(b));
+  const n=m._f.length;m._f.forEach(u=>{new Image().src=u;});
+  let i=0,auto=true,drag=false,x0=0,i0=0;
+  const show=k=>{i=((k%n)+n)%n;img.src=m._f[i];};
+  seqTimer=setInterval(()=>{if(auto&&!drag)show(i+1);},60);
+  img.onpointerdown=e=>{drag=true;x0=e.clientX;i0=i;img.setPointerCapture(e.pointerId);};
+  img.onpointermove=e=>{if(drag)show(i0+Math.round((e.clientX-x0)/img.clientWidth*n));};
+  img.onpointerup=img.onpointercancel=()=>{drag=false;};
+  $('#autoBtn').onclick=()=>{auto=!auto;};
+}
+
+/* ---------- Luce e riflessi (stile render) ---------- */
+const BASE='https://modelviewer.dev/shared-assets/environments/';
+const ENVS=[
+  {n:'Studio (neutro)',u:'neutral'},
+  {n:'Alba',u:BASE+'spruit_sunrise_1k_HDR.hdr'},
+  {n:'Officina',u:BASE+'aircraft_workshop_01_1k.hdr'},
+  {n:'Parco',u:BASE+'whipple_creek_regional_park_04_1k.hdr'},
+  {n:'Luna',u:BASE+'moon_1k.hdr'}
+];
+const fx=Object.assign({env:0,exp:1.1,soft:0.6,sky:false,custom:null,customName:''},
+  JSON.parse(localStorage.getItem('fx')||'{}'));
+fx.custom=null; if(fx.env==='c')fx.env=0;
+const envUrl=()=>fx.env==='c'?fx.custom:ENVS[fx.env].u;
+function applyFx(){
+  const u=envUrl();
+  document.querySelectorAll('model-viewer').forEach((v,i)=>{
+    v.setAttribute('environment-image',u);
+    v.setAttribute('tone-mapping','aces');
+    v.setAttribute('exposure',fx.exp);
+    v.setAttribute('shadow-softness',fx.soft);
+    v.setAttribute('shadow-intensity','1.2');
+    if(v.closest('.stage')){ if(fx.sky&&u!=='neutral')v.setAttribute('skybox-image',u); else v.removeAttribute('skybox-image'); }
+  });
+  const{custom,...save}=fx;localStorage.setItem('fx',JSON.stringify(save));
+}
+function bindFx(){
+  $('#fxEnv').onchange=e=>{fx.env=e.target.value==='c'?'c':+e.target.value;applyFx();};
+  $('#fxExp').oninput=e=>{fx.exp=+e.target.value;applyFx();};
+  $('#fxSoft').oninput=e=>{fx.soft=+e.target.value;applyFx();};
+  $('#fxSky').onchange=e=>{fx.sky=e.target.checked;applyFx();};
+  $('#fxHdr').onclick=()=>$('#hdr').click();
+  $('#fxShot').onclick=async()=>{
+    const b=await document.querySelector('.stage model-viewer').toBlob({mimeType:'image/png'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='render.png';a.click();
+    toast('Foto salvata');
+  };
+}
+$('#hdr').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  fx.custom=URL.createObjectURL(f);fx.customName=nice(f.name.replace(/\.(hdr|jpg|jpeg|png)$/i,''));fx.env='c';
+  e.target.value='';render();toast('HDRI caricato');
+};
+
+/* ---------- Azioni ---------- */
+document.addEventListener('click',async e=>{
+  const pick=e.target.closest('[data-pick]');
+  if(pick){selected=pick.dataset.pick;lbOpen=true;render();return;}
+  const del=e.target.closest('[data-del]');
+  if(del){
+    if(!del.classList.contains('sure')){
+      del.classList.add('sure');del.textContent='Conferma';
+      setTimeout(()=>{if(del.isConnected){del.classList.remove('sure');del.textContent='Elimina';}},3000);
+      return;
+    }
+    const id=del.dataset.del; await remove(id);
+    URL.revokeObjectURL(urls[id]);delete urls[id];
+    items=items.filter(m=>m.id!==id);render();toast('Render eliminato');
+  }
+});
+$('#addBtn').onclick=$('#addBtn2').onclick=()=>$('#file').click();
+function applyHero(){
+  const hero=$('#hero'),u=localStorage.getItem('heroUrl')||(urls.__hero||'');
+  hero.style.backgroundImage=u?`url("${u}")`:'';hero.classList.toggle('img',!!u);
+}
+$('#bgBtn').onclick=async()=>{
+  const v=prompt("Incolla il link di un'immagine di sfondo.\nLascia vuoto per scegliere un file dal computer.\nScrivi 0 per tornare al mare.");
+  if(v===null)return;
+  if(v.trim()==='0'){localStorage.removeItem('heroUrl');await remove('__hero');delete urls.__hero;applyHero();return;}
+  if(v.trim()){localStorage.setItem('heroUrl',v.trim());applyHero();return;}
+  $('#bgIn').click();
+};
+$('#bgIn').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  await put({id:'__hero',blob:f,added:0});localStorage.removeItem('heroUrl');
+  urls.__hero=URL.createObjectURL(f);applyHero();
+};
+$('#seqBtn').onclick=()=>$('#seqIn').click();
+$('#seqIn').onchange=async e=>{
+  const fs=[...e.target.files].filter(f=>/^image\//.test(f.type));e.target.value='';
+  if(fs.length<2){toast('Scegli almeno 2 immagini: tutti i fotogrammi del giro');return;}
+  fs.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+  const name=nice(fs[0].name).replace(/[\s_-]*\d+$/,'')||'Sequenza 360';
+  const m={id:crypto.randomUUID(),name,type:'seq',frames:fs,added:Date.now()};
+  await put(m);items.push(m);selected=m.id;render();toast(`Sequenza con ${fs.length} fotogrammi aggiunta`);
+};
+$('#file').onchange=e=>{addFiles(e.target.files);e.target.value='';};
+
+async function addFiles(list){
+  const kind=f=>/\.glb$/i.test(f.name)?'model':/^image\//.test(f.type)?'image':/^video\//.test(f.type)?'video':null;
+  const files=[...list].filter(f=>kind(f));
+  if(!files.length){toast('Formati accettati: immagini, video e .glb');return;}
+  for(const f of files){
+    const m={id:crypto.randomUUID(),name:nice(f.name),type:kind(f),blob:f,added:Date.now()};
+    await put(m);items.push(m);selected=m.id;
+  }
+  render();toast(files.length>1?`${files.length} render aggiunti`:'Render aggiunto');
+}
+
+/* trascina e rilascia */
+let depth=0;
+addEventListener('dragenter',e=>{e.preventDefault();depth++;$('#drop').classList.add('show');});
+addEventListener('dragleave',()=>{if(--depth<=0){depth=0;$('#drop').classList.remove('show');}});
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();depth=0;$('#drop').classList.remove('show');addFiles(e.dataTransfer.files);});
+
+/* ---------- Visualizzatore a schermo intero ---------- */
+function step(d){const i=items.findIndex(m=>m.id===selected);selected=items[(i+d+items.length)%items.length].id;render();}
+function closeLb(){lbOpen=false;render();}
+$('#lbX').onclick=closeLb;
+$('#lbPrev').onclick=()=>step(-1);$('#lbNext').onclick=()=>step(1);
+$('#lb').addEventListener('click',e=>{if(e.target.id==='lb'||e.target.id==='stageHost')closeLb();});
+addEventListener('keydown',e=>{
+  if(!lbOpen||e.target.matches('input,select'))return;
+  if(e.key==='Escape')closeLb();else if(e.key==='ArrowLeft')step(-1);else if(e.key==='ArrowRight')step(1);
+});
+
+/* ---------- Avvio ---------- */
+(async()=>{
+  const all=await getAll();
+  const hb=all.find(m=>m.id==='__hero');if(hb)urls.__hero=URL.createObjectURL(hb.blob);
+  applyHero();
+  items=all.filter(m=>m.id!=='__hero').sort((a,b)=>a.added-b.added);
+  items.forEach(m=>m.type=m.type||'model');
+  /* la prima volta carica la statua di Luffy, se il file è nella stessa cartella */
+  if(!localStorage.getItem('seeded')){
+    localStorage.setItem('seeded','1');
+    try{
+      const r=await fetch('LUFFYSTATUA.glb');
+      if(r.ok){const m={id:crypto.randomUUID(),name:'Statua di Luffy',type:'model',blob:await r.blob(),added:Date.now()};await put(m);items.push(m);}
+    }catch(_){}
+  }
+  render();
+})();
+</script>
+</body>
+</html>
